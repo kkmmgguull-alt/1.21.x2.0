@@ -1,0 +1,36 @@
+name: Build PojavHUD
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Unzip the source
+        run: |
+          unzip pojavhud-1.0.0-source.zip -d pojavhud
+          cd pojavhud
+          ls -la
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Build with Gradle
+        run: |
+          cd pojavhud
+          chmod +x gradlew
+          ./gradlew build --no-daemon
+
+      - name: Upload the jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: pojavhud-jar
+          path: pojavhud/build/libs/*.jar
